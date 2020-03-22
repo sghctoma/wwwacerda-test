@@ -13,56 +13,56 @@ class Display {
 
         this.sources = {
             // start screen
-            startscreen: '/assets/startscreen.png',
-            reveal_start: '/assets/buttons/reveal-start-position.png',
-            reveal_start_pressed: '/assets/buttons/reveal-start-position_pressed.png',
-            first_round: '/assets/buttons/round-one.png',
-            first_round_pressed: '/assets/buttons/round-one_pressed.png',
+            startscreen: 'assets/startscreen.png',
+            reveal_start: 'assets/buttons/reveal-start-position.png',
+            reveal_start_pressed: 'assets/buttons/reveal-start-position_pressed.png',
+            first_round: 'assets/buttons/round-one.png',
+            first_round_pressed: 'assets/buttons/round-one_pressed.png',
 
             // general
-            background: '/assets/background.png',
-            backbutton: '/assets/buttons/backbutton.png',
+            background: 'assets/background.png',
+            backbutton: 'assets/buttons/backbutton.png',
 
             // colonization phase; travel
-            shuttle: '/assets/shuttle-icon-centered@3x.png',
-            travel_arrows: '/assets/travel-arrows-left-right@3x.png',
-            shuttle_phase_indicator: '/assets/shuttle-phase-graphical-indicator@3x.png',
-            init_shuttle: '/assets/buttons/initiate-shuttle-phase.png',
-            init_shuttle_pressed: '/assets/buttons/initiate-shuttle-phase_pressed.png',
+            shuttle: 'assets/shuttle-icon-centered@3x.png',
+            travel_arrows: 'assets/travel-arrows-left-right@3x.png',
+            shuttle_phase_indicator: 'assets/shuttle-phase-graphical-indicator@3x.png',
+            init_shuttle: 'assets/buttons/initiate-shuttle-phase.png',
+            init_shuttle_pressed: 'assets/buttons/initiate-shuttle-phase_pressed.png',
             
             // colonization phase; no travel
-            shuttle_nogo: '/assets/no-travel-icon@3x.png',
-            next_round: '/assets/buttons/next-round.png',
-            next_round_pressed: '/assets/buttons/next-round_pressed.png',
-            colonization_phase_indicator: '/assets/2@3x.png',
+            shuttle_nogo: 'assets/no-travel-icon@3x.png',
+            next_round: 'assets/buttons/next-round.png',
+            next_round_pressed: 'assets/buttons/next-round_pressed.png',
+            colonization_phase_indicator: 'assets/2@3x.png',
 
             // grid randomizer
-            hex_bottom_left_down:   '/assets/grid/bottom_left-down.png',
-            hex_bottom_left_up:     '/assets/grid/bottom_left-up.png',
-            hex_bottom_right_down:  '/assets/grid/bottom_right_down.png',
-            hex_bottom_right_up:    '/assets/grid/bottom_right-up.png',
-            hex_left_down:          '/assets/grid/left-down.png',
-            hex_left_up:            '/assets/grid/left-up.png',
-            hex_right_down:         '/assets/grid/right-down.png',
-            hex_right_up:           '/assets/grid/right-up.png',
-            hex_top_left_down:      '/assets/grid/top_left-down.png',
-            hex_top_left_up:        '/assets/grid/top_left-up.png',
-            hex_top_right_down:     '/assets/grid/top_right-down.png',
-            hex_top_right_up:       '/assets/grid/top_right-up.png',
+            hex_bottom_left_down:   'assets/grid/bottom_left-down.png',
+            hex_bottom_left_up:     'assets/grid/bottom_left-up.png',
+            hex_bottom_right_down:  'assets/grid/bottom_right_down.png',
+            hex_bottom_right_up:    'assets/grid/bottom_right-up.png',
+            hex_left_down:          'assets/grid/left-down.png',
+            hex_left_up:            'assets/grid/left-up.png',
+            hex_right_down:         'assets/grid/right-down.png',
+            hex_right_up:           'assets/grid/right-up.png',
+            hex_top_left_down:      'assets/grid/top_left-down.png',
+            hex_top_left_up:        'assets/grid/top_left-up.png',
+            hex_top_right_down:     'assets/grid/top_right-down.png',
+            hex_top_right_up:       'assets/grid/top_right-up.png',
 
             // card randomizer
-            rnd_card_1: '/assets/card/random-card-display-hd-spot-1@3x.png',
-            rnd_card_2: '/assets/card/random-card-display-hd-spot-2@3x.png',
-            rnd_card_3: '/assets/card/random-card-display-hd-spot-3@3x.png',
-            rnd_card_4: '/assets/card/random-card-display-hd-spot-4@3x.png',
-            rnd_card_5: '/assets/card/random-card-display-hd-spot-5@3x.png',
-            rnd_card_6: '/assets/card/random-card-display-hd-spot-6@3x.png',
+            rnd_card_1: 'assets/card/random-card-display-hd-spot-1@3x.png',
+            rnd_card_2: 'assets/card/random-card-display-hd-spot-2@3x.png',
+            rnd_card_3: 'assets/card/random-card-display-hd-spot-3@3x.png',
+            rnd_card_4: 'assets/card/random-card-display-hd-spot-4@3x.png',
+            rnd_card_5: 'assets/card/random-card-display-hd-spot-5@3x.png',
+            rnd_card_6: 'assets/card/random-card-display-hd-spot-6@3x.png',
 
             // tech randomizer
-            rnd_tech_1: '/assets/tech/1-middle-up.png',
-            rnd_tech_2: '/assets/tech/2-middle-down.png',
-            rnd_tech_3: '/assets/tech/3-bottom-up.png',
-            rnd_tech_4: '/assets/tech/4-top-down.png',
+            rnd_tech_1: 'assets/tech/1-middle-up.png',
+            rnd_tech_2: 'assets/tech/2-middle-down.png',
+            rnd_tech_3: 'assets/tech/3-bottom-up.png',
+            rnd_tech_4: 'assets/tech/4-top-down.png',
         };
         
         this.labels = {};
