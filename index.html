@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes" /> 
+    <meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5, user-scalable=no">
+    <style>
+    @font-face {
+        font-family: 'Continuum Medium Regular';
+        font-style: normal;
+        font-weight: normal;
+        src: local('Continuum Medium Regular'), url('/assets/Contm___.woff') format('woff');
+    }
+    canvas {
+        padding: 0;
+        margin: auto;
+        display: block;
+    }
+    </style>
+    <script src="https://unpkg.com/konva@4.1.6/konva.min.js"></script>
+    </head>
+    <body>
+        <div align="center" id="container"></div>
+        <script src="lacerda.js"></script>
+        <script src="graphics.js"></script>
+        <script>
+            var lacerda = new Lacerda();
+            var display = new Display(lacerda);
+
+            window.onresize = function() {
+                var c = document.getElementById("container");
+
+                img_ratio = 845 / 1515; //XXX
+                w = 0.98 * window.innerWidth;
+                h = 0.98 * window.innerHeight;
+                if (w/h <= img_ratio) {
+                    c.width = w;
+                    c.height = w / img_ratio;
+                } else {
+                    c.width = h * img_ratio;
+                    c.height = h;
+                }
+
+                display.stage.width(c.width);
+                display.stage.height(c.height);
+                display.stage.scale({x: c.width/845, y: c.height/1515});
+                display.stage.draw();
+            }
+
+            window.onload = function() {
+                window.onresize();
+            }
+        </script>
+    </body>
+</html>
