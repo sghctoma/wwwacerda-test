@@ -14,10 +14,12 @@ class Display {
         this.sources = {
             // start screen
             startscreen: 'assets/startscreen.png',
-            reveal_start: 'assets/buttons/reveal-start-position.png',
-            reveal_start_pressed: 'assets/buttons/reveal-start-position_pressed.png',
-            first_round: 'assets/buttons/round-one.png',
-            first_round_pressed: 'assets/buttons/round-one_pressed.png',
+            reveal_start: 'assets/buttons/reveal-start-position.svg',
+            reveal_start_pressed: 'assets/buttons/reveal-start-position_pressed.svg',
+            reveal_start_hover: 'assets/buttons/reveal-start-position_hover.svg',
+            first_round: 'assets/buttons/round-one.svg',
+            first_round_pressed: 'assets/buttons/round-one_pressed.svg',
+            first_round_hover: 'assets/buttons/round-one_hover.svg',
 
             // general
             background: 'assets/background.png',
@@ -27,13 +29,15 @@ class Display {
             shuttle: 'assets/shuttle-icon-centered@3x.png',
             travel_arrows: 'assets/travel-arrows-left-right@3x.png',
             shuttle_phase_indicator: 'assets/shuttle-phase-graphical-indicator@3x.png',
-            init_shuttle: 'assets/buttons/initiate-shuttle-phase.png',
-            init_shuttle_pressed: 'assets/buttons/initiate-shuttle-phase_pressed.png',
+            init_shuttle: 'assets/buttons/initiate-shuttle-phase.svg',
+            init_shuttle_pressed: 'assets/buttons/initiate-shuttle-phase_pressed.svg',
+            init_shuttle_hover: 'assets/buttons/initiate-shuttle-phase_hover.svg',
             
             // colonization phase; no travel
             shuttle_nogo: 'assets/no-travel-icon@3x.png',
-            next_round: 'assets/buttons/next-round.png',
-            next_round_pressed: 'assets/buttons/next-round_pressed.png',
+            next_round: 'assets/buttons/next-round.svg',
+            next_round_pressed: 'assets/buttons/next-round_pressed.svg',
+            next_round_hover: 'assets/buttons/next-round_hover.svg',
             colonization_phase_indicator: 'assets/2@3x.png',
 
             // grid randomizer
@@ -59,10 +63,8 @@ class Display {
             rnd_card_6: 'assets/card/random-card-display-hd-spot-6@3x.png',
 
             // tech randomizer
-            rnd_tech_1: 'assets/tech/1-middle-up.png',
-            rnd_tech_2: 'assets/tech/2-middle-down.png',
-            rnd_tech_3: 'assets/tech/3-bottom-up.png',
-            rnd_tech_4: 'assets/tech/4-top-down.png',
+            rnd_tech_up: 'assets/tech/tech-tile-hd-down@3x.png',
+            rnd_tech_down: 'assets/tech/tech-tile-hd-up@3x.png',
         };
         
         this.labels = {};
@@ -77,7 +79,7 @@ class Display {
 
     renderStartScreen() {
         this.layer.add(this.images.startscreen);
-        this.layer.add(this.buttons['reveal']);
+        this.layer.add(this.buttons['reveal_start']);
         this.stage.add(this.layer);
     }
 
@@ -121,7 +123,7 @@ class Display {
     		strokeWidth: 2,
     	}));
 	    
-        this.buttons.reveal.hide();
+        this.buttons.reveal_start.hide();
         this.layer.add(this.buttons.first_round);
         
         this.layer.draw();
@@ -294,11 +296,11 @@ class Display {
         	this.images['card_random_src'][i] = images['rnd_card_'+(i+1)];
         }
         
-        this.images['tech_random'] = new Konva.Image({ x: 732, y: 963 });
-        this.images['tech_random_src'] = [];
-        for (var i = 0; i < 4; i++) {
-        	this.images['tech_random_src'][i] = images['rnd_tech_'+(i+1)];
-        }
+        this.images['tech_random'] = new Konva.Image({ x: 732, y: 1086 });
+        this.images['tech_random_src'] = [
+            images['rnd_tech_up'],
+            images['rnd_tech_down']
+        ];
 
         this.images['grid_random'] = new Konva.Image();
         this.images['grid_random_src'] = [
@@ -377,50 +379,55 @@ class Display {
     	// (as if you were trying to drag the button), and release it outside
     	// the button areak, it would remain "pressed".
     	this.layer.on('touchend', () => {
-        	this.buttons['reveal'].image(images.reveal_start);
+        	this.buttons['reveal_start'].image(images.reveal_start);
         	this.buttons['first_round'].image(images.first_round);
         	this.buttons['next_round'].image(images.next_round);
         	this.buttons['init_shuttle'].image(images.init_shuttle);
         	this.layer.draw();
         });
 
-        // REVEAL START POSITION
-        this.buttons['reveal'] = new Konva.Image({
-            image: images.reveal_start,
-            x: this.width/2 - images.reveal_start.width/2,
-            y: 1330,
+        ['reveal_start', 'first_round', 'init_shuttle', 'next_round'].forEach((b) => {
+            this.buttons[b] = new Konva.Image({
+                image: images[b],
+                x: (this.width - images[b].width * 1.5) / 2,
+                width: images[b].width * 1.5,
+                height: images[b].height * 1.5,
+            });
+            this.buttons[b].on('mouseover', () => {
+                this.buttons[b].image(images[b + '_hover']);
+                this.layer.draw();
+            });
+            this.buttons[b].on('mousedown touchstart', () => {
+                this.buttons[b].image(images[b + '_pressed']);
+                this.layer.draw();
+            });
+            this.buttons[b].on('mouseout touchend mouseup', () => {
+                this.buttons[b].image(images[b]);
+                this.layer.draw();
+            });
         });
-        this.buttons['reveal'].on('mouseover touchstart', () => {
-        	this.buttons['reveal'].image(images.reveal_start_pressed);
-        	this.layer.draw();
-        });
-        this.buttons['reveal'].on('mouseout', () => {
-        	this.buttons['reveal'].image(images.reveal_start);
-        	this.layer.draw();
-        });
-        this.buttons['reveal'].on('mouseup touchend', () => {
-        	this.revealStartPosition();
-        });
+        
+        this.buttons['reveal_start'].y(1340);
+        this.buttons['first_round'].y(1355);
+        this.buttons['init_shuttle'].y(1340);
+        this.buttons['next_round'].y(1355);
 
-        // FIRST ROUND
-        this.buttons['first_round'] = new Konva.Image({
-            image: images.first_round,
-            x: this.width/2 - images.first_round.width/2,
-            y: 1361,
-        });
-        this.buttons['first_round'].on('mouseover touchstart', () => {
-        	this.buttons['first_round'].image(images.first_round_pressed);
-        	this.layer.draw();
-        });
-        this.buttons['first_round'].on('mouseout', () => {
-        	this.buttons['first_round'].image(images.first_round);
-        	this.layer.draw();
+        this.buttons['reveal_start'].on('mouseup touchend', () => {
+        	this.revealStartPosition();
         });
         this.buttons['first_round'].on('mouseup touchend', () => {
         	this.layer.destroyChildren();
             this.setupLayer();
 
             this.lacerda.nextState();
+            this.renderScreen();
+        });
+        this.buttons['next_round'].on('mouseup touchend', () => {
+        	this.lacerda.nextState();
+            this.renderScreen();
+        });
+        this.buttons['init_shuttle'].on('mouseup touchend', () => {
+        	this.lacerda.currentPhase = 'SHUTTLE';
             this.renderScreen();
         });
 
@@ -430,44 +437,6 @@ class Display {
         });
         this.buttons['backbutton'].on('click tap', () => {
             this.lacerda.prevState();
-            this.renderScreen();
-        });
-
-        // NEXT ROUND
-        this.buttons['next_round'] = new Konva.Image({
-            image: images.next_round,
-            x: this.width/2 - images.next_round.width/2,
-            y: 1361,
-        });
-        this.buttons['next_round'].on('mouseover touchstart', () => {
-        	this.buttons['next_round'].image(images.next_round_pressed);
-        	this.layer.draw();
-        });
-        this.buttons['next_round'].on('mouseout', () => {
-        	this.buttons['next_round'].image(images.next_round);
-        	this.layer.draw();
-        });
-        this.buttons['next_round'].on('mouseup touchend', () => {
-        	this.lacerda.nextState();
-            this.renderScreen();
-        });
-
-        // INITIATE SHUTTLE PHASE
-        this.buttons['init_shuttle'] = new Konva.Image({
-            image: images.init_shuttle,
-            x: this.width/2 - images.init_shuttle.width/2,
-            y: 1330,
-        });
-        this.buttons['init_shuttle'].on('mouseover touchstart', () => {
-        	this.buttons['init_shuttle'].image(images.init_shuttle_pressed);
-        	this.layer.draw();
-        });
-        this.buttons['init_shuttle'].on('mouseout', () => {
-        	this.buttons['init_shuttle'].image(images.init_shuttle);
-        	this.layer.draw();
-        });
-        this.buttons['init_shuttle'].on('mouseup touchend', () => {
-        	this.lacerda.currentPhase = 'SHUTTLE';
             this.renderScreen();
         });
     }
