@@ -103,7 +103,7 @@ class Lacerda {
             this.currentRound > this.cards.length ? card.mission : null,
             this.randInt(12),
             this.randInt(6),
-            this.randInt(4));
+            this.randInt(2));
 
         if (card.travel) {
             state.turnOrders = this.distinctRandInts(4);
