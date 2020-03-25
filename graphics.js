@@ -24,6 +24,8 @@ class Display {
             // general
             background: 'assets/background.png',
             backbutton: 'assets/buttons/backbutton.png',
+            backbutton_pressed: 'assets/buttons/backbutton_pressed.png',
+            backbutton_hover: 'assets/buttons/backbutton_hover.png',
 
             // colonization phase; travel
             shuttle: 'assets/shuttle-icon-centered@3x.png',
@@ -405,10 +407,11 @@ class Display {
         	this.buttons['first_round'].image(images.first_round);
         	this.buttons['next_round'].image(images.next_round);
         	this.buttons['init_shuttle'].image(images.init_shuttle);
+            this.buttons['backbutton'].image(images.backbutton);
         	this.layer.draw();
         });
 
-        ['reveal_start', 'first_round', 'init_shuttle', 'next_round'].forEach((b) => {
+        ['reveal_start', 'first_round', 'init_shuttle', 'next_round', 'backbutton'].forEach((b) => {
             this.buttons[b] = new Konva.Image({
                 image: images[b],
                 x: (this.width - images[b].width * 1.5) / 2,
@@ -434,6 +437,13 @@ class Display {
         this.buttons['init_shuttle'].y(1340);
         this.buttons['next_round'].y(1355);
 
+        //XXX: back button is still png with proper size, so we undo the 1.5x
+        //     increase here.
+        this.buttons['backbutton'].x(0);
+        this.buttons['backbutton'].y(0);
+        this.buttons['backbutton'].width(images['backbutton'].width);
+        this.buttons['backbutton'].height(images['backbutton'].height);
+
         this.buttons['reveal_start'].on('mouseup touchend', () => {
         	this.revealStartPosition();
         });
@@ -450,15 +460,6 @@ class Display {
         });
         this.buttons['init_shuttle'].on('mouseup touchend', () => {
         	this.lacerda.currentPhase = 'SHUTTLE';
-            this.renderScreen();
-        });
-
-        // BACK
-        this.buttons['backbutton'] = new Konva.Image({
-            image: images.backbutton,
-        });
-        this.buttons['backbutton'].on('click tap', () => {
-            this.lacerda.prevState();
             this.renderScreen();
         });
     }
