@@ -40,20 +40,6 @@ class Display {
             next_round_hover: 'assets/buttons/next-round_hover.svg',
             colonization_phase_indicator: 'assets/2@3x.png',
 
-            // grid randomizer
-            hex_bottom_left_down:   'assets/grid/bottom_left-down.png',
-            hex_bottom_left_up:     'assets/grid/bottom_left-up.png',
-            hex_bottom_right_down:  'assets/grid/bottom_right_down.png',
-            hex_bottom_right_up:    'assets/grid/bottom_right-up.png',
-            hex_left_down:          'assets/grid/left-down.png',
-            hex_left_up:            'assets/grid/left-up.png',
-            hex_right_down:         'assets/grid/right-down.png',
-            hex_right_up:           'assets/grid/right-up.png',
-            hex_top_left_down:      'assets/grid/top_left-down.png',
-            hex_top_left_up:        'assets/grid/top_left-up.png',
-            hex_top_right_down:     'assets/grid/top_right-down.png',
-            hex_top_right_up:       'assets/grid/top_right-up.png',
-
             // card randomizer
             rnd_card_1: 'assets/card/random-card-display-hd-spot-1@3x.png',
             rnd_card_2: 'assets/card/random-card-display-hd-spot-2@3x.png',
@@ -66,7 +52,22 @@ class Display {
             rnd_tech_up: 'assets/tech/tech-tile-hd-down@3x.png',
             rnd_tech_down: 'assets/tech/tech-tile-hd-up@3x.png',
         };
-        
+
+        this.hex_coordinates = [
+            [{q: -6, r: +2}, {q: -6, r: +3}, {q: -6, r: +4}, null],   // left down
+            [{q: -6, r: +4}, {q: -6, r: +3}, {q: -6, r: +2}, null],   // left up
+            [{q: +6, r: -2}, {q: +6, r: -3}, {q: +6, r: -4}, null],   // right up
+            [{q: +6, r: -4}, {q: +6, r: -3}, {q: +6, r: -2}, null],   // right down
+            [{q: +2, r: -5}, {q: +3, r: -5}, {q: +4, r: -5}, {q: +5, r: -5}],   // top right down
+            [{q: +5, r: -5}, {q: +4, r: -5}, {q: +3, r: -5}, {q: +2, r: -5}],   // top right up
+            [{q: +2, r: +3}, {q: +3, r: +2}, {q: +4, r: +1}, {q: +5, r: +0}],   // bottom right up
+            [{q: +5, r: +0}, {q: +4, r: +1}, {q: +3, r: +2}, {q: +2, r: +3}],   // bottom right down
+            [{q: -5, r: +0}, {q: -4, r: -1}, {q: -3, r: -2}, {q: -2, r: -3}],   // top left up
+            [{q: -2, r: -3}, {q: -3, r: -2}, {q: -4, r: -1}, {q: -5, r: -0}],   // top left down
+            [{q: -2, r: +5}, {q: -3, r: +5}, {q: -4, r: +5}, {q: -5, r: +5}],   // bottom left up
+            [{q: -5, r: +5}, {q: -4, r: +5}, {q: -3, r: +5}, {q: -2, r: +5}],   // bottom left down
+        ];
+    
         this.labels = {};
         this.shapes = {};
         this.images = {};
@@ -129,6 +130,22 @@ class Display {
         this.layer.draw();
     }
 
+    getHexCoordinates(q, r) {
+        // horizontal distance: 2 * radius * 0.75
+        // vertical distance: sqrt(3) * radius
+        var x_offset = q * (74 * 0.75);
+        var y_offset = (q / 2 + r) * Math.sqrt(3) * 37;
+        if (y_offset < -74) {
+            y_offset += 3;
+        } else if (y_offset > 74) {
+            y_offset -= 3;
+        }
+        return {
+            x: 422 + x_offset,
+            y: 724 + y_offset,
+        };
+    }
+
     setupLayer() {
         this.layer.add(this.images.background);
         this.layer.add(this.buttons.backbutton);
@@ -140,7 +157,6 @@ class Display {
         this.layer.add(this.labels.action);
 
         this.layer.add(this.images.card_random);
-        this.layer.add(this.images.grid_random);
         this.layer.add(this.images.tech_random);
 
         this.layer.add(this.shapes.turnorder_pointer);
@@ -155,6 +171,10 @@ class Display {
 
         this.layer.add(this.buttons.next_round);
         this.layer.add(this.images.shuttle_nogo);
+
+        this.shapes.hexes.forEach((hex) => {
+            this.layer.add(hex);
+        });
     }
 
     renderScreen() {
@@ -228,10 +248,19 @@ class Display {
         }
 
         // hex tiebreaker
-        var g = this.images.grid_random_src[state.hexTiebreaker]; 
-        this.images.grid_random.image(g.image);
-        this.images.grid_random.x(g.x);
-        this.images.grid_random.y(g.y);
+        // XXX: coordinates could, and probably should be precomputed...
+        var hex = 0;
+        this.hex_coordinates[state.hexTiebreaker].forEach((c) => {
+            if (c == null) {
+                this.shapes.hexes[hex].hide(hex);
+            } else {
+                this.shapes.hexes[hex].show(hex);
+                var canvas_coord = this.getHexCoordinates(c.q, c.r);
+                this.shapes.hexes[hex].x(canvas_coord.x);
+                this.shapes.hexes[hex].y(canvas_coord.y);
+            }
+            hex += 1;
+        });
 
         // buttons
         if (this.lacerda.currentPhase == 'SHUTTLE') {
@@ -300,22 +329,6 @@ class Display {
         this.images['tech_random_src'] = [
             images['rnd_tech_up'],
             images['rnd_tech_down']
-        ];
-
-        this.images['grid_random'] = new Konva.Image();
-        this.images['grid_random_src'] = [
-            { image: images.hex_bottom_left_down, x: 36, y: 750 },
-            { image: images.hex_bottom_left_up, x: 107, y: 848 },
-            { image: images.hex_bottom_right_down, x: 496, y: 741 },
-            { image: images.hex_bottom_right_up, x: 373, y: 849 },
-            { image: images.hex_left_down, x: 3, y: 507 },
-            { image: images.hex_left_up, x: 3, y: 624 },
-            { image: images.hex_right_down, x: 685, y: 506 },
-            { image: images.hex_right_up, x: 685, y: 624 },
-            { image: images.hex_top_left_down, x: 107, y: 370},
-            { image: images.hex_top_left_up, x: 28, y: 435 },
-            { image: images.hex_top_right_down, x: 370, y: 369 },
-            { image: images.hex_top_right_up, x: 496, y: 435 },
         ];
 
         // call this from here because we need the images for the buttons
@@ -472,14 +485,12 @@ class Display {
     		strokeWidth: 1,
         });
 
-        // XXX I'll leave this here in case I ever decide to do the hex tiebreaker programatically...
-        /*
         this.shapes['hexes'] = [
-            new Konva.RegularPolygon({ sides: 6, radius: 34, rotation: 30, fill: '#097a6d' }),
-            new Konva.RegularPolygon({ sides: 6, radius: 34, rotation: 30, fill: '#588c83' }),
-            new Konva.RegularPolygon({ sides: 6, radius: 34, rotation: 30, fill: '#839e97' }),
-            new Konva.RegularPolygon({ sides: 6, radius: 34, rotation: 30, fill: '#909b96' }),
+            new Konva.RegularPolygon({ sides: 6, radius: 37, rotation: 30, fill: '#097a6d' }),
+            new Konva.RegularPolygon({ sides: 6, radius: 37, rotation: 30, fill: '#588c83' }),
+            new Konva.RegularPolygon({ sides: 6, radius: 37, rotation: 30, fill: '#839e97' }),
+            new Konva.RegularPolygon({ sides: 6, radius: 37, rotation: 30, fill: '#909b96' }),
         ];
-        */
+        //*/
     }
 }
