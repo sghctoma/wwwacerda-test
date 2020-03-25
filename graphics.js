@@ -200,6 +200,15 @@ class Display {
         // mission marker
         if (state.mission != null) {
             this.labels.mission.text(['A', 'B', 'C'][state.mission-1]);
+            //XXX: Please don't read the next 7 lines. It's an ugly hack to make
+            //     sure mission marker letters are actually centered.
+            if (state.mission == 1) {
+                this.labels.mission.x(1);
+            } else if (state.mission == 2) {
+                this.labels.mission.x(2);
+            } else {
+                this.labels.mission.x(0);
+            }
             this.shapes.active_mission.show();
         } else {
             this.labels.mission.text('');
