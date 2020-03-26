@@ -13,15 +13,6 @@ class Display {
         this.stage.add(this.layer);
 
         this.sources = {
-            // start screen
-            startscreen: 'assets/startscreen.png',
-            reveal_start: 'assets/buttons/reveal-start-position.svg',
-            reveal_start_pressed: 'assets/buttons/reveal-start-position_pressed.svg',
-            reveal_start_hover: 'assets/buttons/reveal-start-position_hover.svg',
-            first_round: 'assets/buttons/round-one.svg',
-            first_round_pressed: 'assets/buttons/round-one_pressed.svg',
-            first_round_hover: 'assets/buttons/round-one_hover.svg',
-
             // general
             background: 'assets/background.png',
             backbutton: 'assets/buttons/backbutton.png',
@@ -44,6 +35,7 @@ class Display {
             colonization_phase_indicator: 'assets/2@3x.png',
         };
 
+        this.startScreen = new StartScreen(this.sources);
         this.hexTiebreaker = new HexTiebreaker();
         this.cardTiebreaker = new CardTiebreaker(this.sources);
         this.techTiebreaker = new TechTiebreaker(this.sources);
@@ -58,58 +50,7 @@ class Display {
         this.loadImages();
     }
 
-    renderStartScreen() {
-        this.layer.add(this.images.startscreen);
-        this.layer.add(this.buttons['reveal_start']);
-    }
-
-    revealStartPosition() {
-    	var posLacerda = lacerda.startPositions[0];
-    	var offset = (posLacerda < 4 ? 82 : 493);
-    	var color;
-    	for (var i = 0; i < 4; ++i) {
-    		if (posLacerda % 4 == i) {
-    			color = '#1f8d7b';
-    		} else {
-    			color = '#969693';
-    		}
-    		this.layer.add(new Konva.Rect({
-    			x: offset + i * 72,
-    			y: 1257,
-    			width: 54,
-    			height: 54,
-    			fill: color,
-    		}));
-    	}
-
-    	var pentagon_x = posLacerda < 4 ? 217 : 629
-    	this.layer.add(new Konva.RegularPolygon({
-	        x: pentagon_x,	
-	        y: 1168,
-	        sides: 5,
-	        radius: 50,
-	        stroke: '#1f8d7b',
-	        strokeWidth: 4,
-	    }));
-
-		var startpos_x = offset + (posLacerda % 4) * 72 + 27;
-    	this.layer.add(new Konva.Line({
-    		points: [
-    			pentagon_x, 1210,
-    			pentagon_x, 1225,
-    			startpos_x, 1225,
-    			startpos_x, 1257],
-    		stroke: '#1f8d7b',
-    		strokeWidth: 2,
-    	}));
-	    
-        this.buttons.reveal_start.hide();
-        this.layer.add(this.buttons.first_round);
-        
-        this.layer.draw();
-    }
-
-    setupLayer() {
+    setupStage() {
         this.layer.add(this.images.background);
         this.layer.add(this.buttons.backbutton);
         this.layer.add(this.labels.status);
@@ -239,9 +180,6 @@ class Display {
     }
 
     imagesLoaded(images) {
-        this.images['startscreen'] = new Konva.Image({
-            image: images.startscreen,
-        });
         this.images['background'] = new Konva.Image({
             image: images.background,
         });
@@ -271,13 +209,17 @@ class Display {
             y: 1250,
         });
 
+        this.startScreen.imagesLoaded(images);
         this.cardTiebreaker.imagesLoaded(images);
         this.techTiebreaker.imagesLoaded(images);
 
         // call this from here because we need the images for the buttons
         this.setupButtons(images);
 
-        this.renderStartScreen();
+        this.startScreen.setupButtons(images, this);
+        this.stage.add(this.startScreen.layer);
+        this.startScreen.render();
+        //MMM this.renderStartScreen();
     }
     
     loadImages() {
@@ -335,15 +277,13 @@ class Display {
     	// (as if you were trying to drag the button), and release it outside
     	// the button areak, it would remain "pressed".
     	this.layer.on('touchend', () => {
-        	this.buttons['reveal_start'].image(images.reveal_start);
-        	this.buttons['first_round'].image(images.first_round);
         	this.buttons['next_round'].image(images.next_round);
         	this.buttons['init_shuttle'].image(images.init_shuttle);
             this.buttons['backbutton'].image(images.backbutton);
         	this.layer.draw();
         });
 
-        ['reveal_start', 'first_round', 'init_shuttle', 'next_round', 'backbutton'].forEach((b) => {
+        ['init_shuttle', 'next_round', 'backbutton'].forEach((b) => {
             this.buttons[b] = new Konva.Image({
                 image: images[b],
                 x: (this.width - images[b].width * 1.5) / 2,
@@ -364,21 +304,9 @@ class Display {
             });
         });
         
-        this.buttons['reveal_start'].y(1340);
-        this.buttons['first_round'].y(1355);
         this.buttons['init_shuttle'].y(1340);
         this.buttons['next_round'].y(1355);
 
-        this.buttons['reveal_start'].on('mouseup touchend', () => {
-        	this.revealStartPosition();
-        });
-        this.buttons['first_round'].on('mouseup touchend', () => {
-        	this.layer.destroyChildren();
-            this.setupLayer();
-
-            this.lacerda.nextState();
-            this.renderScreen();
-        });
         this.buttons['next_round'].on('mouseup touchend', () => {
         	this.lacerda.nextState();
             this.renderScreen();
