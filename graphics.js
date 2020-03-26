@@ -86,7 +86,7 @@ class Display {
             " PHASE");
 
         // phase indicator
-        if (this.lacerda.currentPhase == 'COLONISATION' && state.turnOrders != null) {
+        if (this.lacerda.currentPhase == 'COLONIZATION' && state.turnOrders != null) {
             this.images.colonization_phase_indicator.show();
             this.images.shuttle_phase_indicator.hide();
         } else {

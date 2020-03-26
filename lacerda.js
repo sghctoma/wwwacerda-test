@@ -43,7 +43,7 @@ class Lacerda {
         this.startPositions = this.distinctRandIntsFromArray([1, 2, 3, 5, 6, 7]);
 
         this.currentRound = 0;
-        this.currentPhase = "COLONISATION";
+        this.currentPhase = "COLONIZATION";
         this.history = [null];
     }
 
@@ -117,7 +117,7 @@ class Lacerda {
     }
 
     nextState() {
-        this.currentPhase = 'COLONISATION';
+        this.currentPhase = 'COLONIZATION';
         this.currentRound += 1;
         if (this.history.length <= this.currentRound) {
             this.draw();
@@ -127,7 +127,7 @@ class Lacerda {
     }
 
     prevState() {
-        this.currentPhase = 'COLONISATION';
+        this.currentPhase = 'COLONIZATION';
         if (this.currentRound == 1) {
             return null;
         } else {
