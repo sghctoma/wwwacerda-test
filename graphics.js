@@ -10,6 +10,7 @@ class Display {
             height: this.height,
         });
         this.layer = new Konva.Layer();
+        this.stage.add(this.layer);
 
         this.sources = {
             // start screen
@@ -55,35 +56,7 @@ class Display {
             rnd_tech_down: 'assets/tech/tech-tile-hd-up@3x.png',
         };
 
-        this.hex_coordinates = [
-            [{q: -6, r: +2}, {q: -6, r: +3}, {q: -6, r: +4}, null],   // left down
-            [{q: -6, r: +4}, {q: -6, r: +3}, {q: -6, r: +2}, null],   // left up
-            [{q: +6, r: -2}, {q: +6, r: -3}, {q: +6, r: -4}, null],   // right up
-            [{q: +6, r: -4}, {q: +6, r: -3}, {q: +6, r: -2}, null],   // right down
-            [{q: +2, r: -5}, {q: +3, r: -5}, {q: +4, r: -5}, {q: +5, r: -5}],   // top right down
-            [{q: +5, r: -5}, {q: +4, r: -5}, {q: +3, r: -5}, {q: +2, r: -5}],   // top right up
-            [{q: +2, r: +3}, {q: +3, r: +2}, {q: +4, r: +1}, {q: +5, r: +0}],   // bottom right up
-            [{q: +5, r: +0}, {q: +4, r: +1}, {q: +3, r: +2}, {q: +2, r: +3}],   // bottom right down
-            [{q: -5, r: +0}, {q: -4, r: -1}, {q: -3, r: -2}, {q: -2, r: -3}],   // top left up
-            [{q: -2, r: -3}, {q: -3, r: -2}, {q: -4, r: -1}, {q: -5, r: -0}],   // top left down
-            [{q: -2, r: +5}, {q: -3, r: +5}, {q: -4, r: +5}, {q: -5, r: +5}],   // bottom left up
-            [{q: -5, r: +5}, {q: -4, r: +5}, {q: -3, r: +5}, {q: -2, r: +5}],   // bottom left down
-        ];
-        this.triangle_coordinates = [
-            [{q: -6.00, r: +1.70}, {q: -5.00, r: -0.75}],   // left down
-            [{q: -6.00, r: +4.30}, {q: -5.00, r: +5.75}],   // left up
-            [{q: +6.00, r: -1.70}, {q: +5.00, r: +0.75}],   // right up
-            [{q: +6.00, r: -4.30}, {q: +5.00, r: -5.75}],   // right down
-            [{q: +1.75, r: -5.00}, {q: -0.75, r: -4.00}],   // top right down
-            [{q: +5.25, r: -5.00}, {q: +6.75, r: -4.00}],   // top right up
-            [{q: +1.75, r: +3.25}, null],                   // bottom right up
-            [{q: +5.25, r: -0.25}, {q: +6.75, r: -2.75}],   // bottom right down
-            [{q: -5.25, r: +0.25}, {q: -6.75, r: +2.75}],   // top left up
-            [{q: -1.75, r: -3.25}, {q: +0.75, r: -4.75}],   // top left down
-            [{q: -1.75, r: +5.00}, null],                   // bottom left up
-            [{q: -5.25, r: +5.00}, {q: -6.75, r: +4.00}],   // bottom left down
-        ];
-        this.triangle_rotations = [180, 0, 0, 180, 120, 300, 60, 240, 60, 240, 300, 120];
+        this.hexTiebreaker = new HexTiebreaker();
 
         this.labels = {};
         this.shapes = {};
@@ -98,7 +71,6 @@ class Display {
     renderStartScreen() {
         this.layer.add(this.images.startscreen);
         this.layer.add(this.buttons['reveal_start']);
-        this.stage.add(this.layer);
     }
 
     revealStartPosition() {
@@ -147,22 +119,6 @@ class Display {
         this.layer.draw();
     }
 
-    getHexCoordinates(q, r) {
-        // horizontal distance: 2 * radius * 0.75
-        // vertical distance: sqrt(3) * radius
-        var x_offset = q * (74 * 0.75);
-        var y_offset = (q / 2 + r) * Math.sqrt(3) * 37;
-        if (y_offset < -74) {
-            y_offset += 3;
-        } else if (y_offset > 74) {
-            y_offset -= 3;
-        }
-        return {
-            x: 422 + x_offset,
-            y: 724 + y_offset,
-        };
-    }
-
     setupLayer() {
         this.layer.add(this.images.background);
         this.layer.add(this.buttons.backbutton);
@@ -189,11 +145,7 @@ class Display {
         this.layer.add(this.buttons.next_round);
         this.layer.add(this.images.shuttle_nogo);
 
-        this.shapes.hexes.forEach((hex) => {
-            this.layer.add(hex);
-        });
-        this.layer.add(this.shapes.triangle1);
-        this.layer.add(this.shapes.triangle2);
+        this.stage.add(this.hexTiebreaker.layer);
     }
 
     renderScreen() {
@@ -275,35 +227,7 @@ class Display {
         	}
         }
 
-        // hex tiebreaker
-        // XXX: coordinates could, and probably should be precomputed...
-        var hex = 0;
-        this.hex_coordinates[state.hexTiebreaker].forEach((c) => {
-            if (c == null) {
-                this.shapes.hexes[hex].hide(hex);
-            } else {
-                this.shapes.hexes[hex].show(hex);
-                var canvas_coord = this.getHexCoordinates(c.q, c.r);
-                this.shapes.hexes[hex].x(canvas_coord.x);
-                this.shapes.hexes[hex].y(canvas_coord.y);
-            }
-            hex += 1;
-        });
-        var t1 = this.triangle_coordinates[state.hexTiebreaker][0];
-        var c1 = this.getHexCoordinates(t1.q, t1.r);
-        this.shapes['triangle1'].x(c1.x);
-        this.shapes['triangle1'].y(c1.y);
-        this.shapes['triangle1'].rotation(this.triangle_rotations[state.hexTiebreaker]);
-        var t2 = this.triangle_coordinates[state.hexTiebreaker][1];
-        if (t2 == null) {
-            this.shapes['triangle2'].hide();
-        } else {
-            this.shapes['triangle2'].show();
-            var c2 = this.getHexCoordinates(t2.q, t2.r);
-            this.shapes['triangle2'].x(c2.x);
-            this.shapes['triangle2'].y(c2.y);
-            this.shapes['triangle2'].rotation(this.triangle_rotations[state.hexTiebreaker]);
-        }
+        this.hexTiebreaker.render(state);
 
         // buttons
         if (this.lacerda.currentPhase == 'SHUTTLE') {
@@ -529,31 +453,6 @@ class Display {
                 ],
     		stroke: '#1f8d7b',
     		strokeWidth: 1,
-        });
-
-        this.shapes['hexes'] = [
-            new Konva.RegularPolygon({ sides: 6, radius: 37, rotation: 30, fill: '#097a6d' }),
-            new Konva.RegularPolygon({ sides: 6, radius: 37, rotation: 30, fill: '#588c83' }),
-            new Konva.RegularPolygon({ sides: 6, radius: 37, rotation: 30, fill: '#839e97' }),
-            new Konva.RegularPolygon({ sides: 6, radius: 37, rotation: 30, fill: '#909b96' }),
-        ];
-        
-        this.shapes['triangle1'] = new Konva.RegularPolygon({
-            x: 100,
-            y: 100,
-            sides: 3,
-            radius: 22 / Math.sqrt(3),
-            scaleY: 2/3,
-            fill: '#1f8d7b',
-        });
-
-        this.shapes['triangle2'] = new Konva.RegularPolygon({
-            x: 100,
-            y: 100,
-            sides: 3,
-            radius: 22 / Math.sqrt(3),
-            scaleY: 2/3,
-            fill: '#839e97',
         });
     }
 }
