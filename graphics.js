@@ -42,14 +42,11 @@ class Display {
             next_round_pressed: 'assets/buttons/next-round_pressed.svg',
             next_round_hover: 'assets/buttons/next-round_hover.svg',
             colonization_phase_indicator: 'assets/2@3x.png',
-
-            // tech randomizer
-            rnd_tech_up: 'assets/tech/tech-tile-hd-down@3x.png',
-            rnd_tech_down: 'assets/tech/tech-tile-hd-up@3x.png',
         };
 
         this.hexTiebreaker = new HexTiebreaker();
         this.cardTiebreaker = new CardTiebreaker(this.sources);
+        this.techTiebreaker = new TechTiebreaker(this.sources);
 
         this.labels = {};
         this.shapes = {};
@@ -122,8 +119,6 @@ class Display {
         this.layer.add(this.labels.mission);
         this.layer.add(this.labels.action);
 
-        this.layer.add(this.images.tech_random);
-
         this.layer.add(this.shapes.turnorder_pointer);
         this.layer.add(this.shapes.turnorder_circle);
         for (var i = 0; i < 4; ++i) {
@@ -139,6 +134,7 @@ class Display {
 
         this.stage.add(this.hexTiebreaker.layer);
         this.stage.add(this.cardTiebreaker.layer);
+        this.stage.add(this.techTiebreaker.layer);
     }
 
     renderScreen() {
@@ -184,9 +180,7 @@ class Display {
         // current action
         this.labels.action.text(state.action);
 
-        // tech tiebreaker
-        this.images.tech_random.image(
-        	this.images.tech_random_src[state.techTiebreaker]);
+        this.techTiebreaker.render(state);
 
         // turn order
         if (this.lacerda.currentPhase == 'SHUTTLE') {
@@ -278,12 +272,7 @@ class Display {
         });
 
         this.cardTiebreaker.imagesLoaded(images);
-        
-        this.images['tech_random'] = new Konva.Image({ x: 732, y: 1086 });
-        this.images['tech_random_src'] = [
-            images['rnd_tech_up'],
-            images['rnd_tech_down']
-        ];
+        this.techTiebreaker.imagesLoaded(images);
 
         // call this from here because we need the images for the buttons
         this.setupButtons(images);

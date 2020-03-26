@@ -1,3 +1,27 @@
+class TechTiebreaker {
+    constructor(sources) {
+        sources['rnd_tech_up'] = 'assets/tech/tech-tile-hd-up@3x.png';
+        sources['rnd_tech_down'] = 'assets/tech/tech-tile-hd-down@3x.png';
+    
+        this.images = [];
+        this.placeholder = new Konva.Image({ x: 732, y: 1086 });
+        this.layer = new Konva.Layer();
+        this.layer.add(this.placeholder);
+    }
+
+    imagesLoaded(images) {
+        this.images = [
+            images['rnd_tech_up'],
+            images['rnd_tech_down']
+        ];
+    }
+
+    render(state) {
+        this.placeholder.image(this.images[state.techTiebreaker]);
+        this.layer.draw();
+    }
+};
+
 class CardTiebreaker {
     constructor(sources) {
         sources['rnd_card_1'] = 'assets/card/random-card-display-hd-spot-1@3x.png';
