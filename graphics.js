@@ -39,6 +39,7 @@ class Display {
         this.hexTiebreaker = new HexTiebreaker();
         this.cardTiebreaker = new CardTiebreaker(this.sources);
         this.techTiebreaker = new TechTiebreaker(this.sources);
+        this.turnOrder = new TurnOrder();
 
         this.labels = {};
         this.shapes = {};
@@ -60,12 +61,6 @@ class Display {
         this.layer.add(this.labels.mission);
         this.layer.add(this.labels.action);
 
-        this.layer.add(this.shapes.turnorder_pointer);
-        this.layer.add(this.shapes.turnorder_circle);
-        for (var i = 0; i < 4; ++i) {
-        	this.layer.add(this.shapes.turnorder_squares[i]);
-        }
-
         this.layer.add(this.buttons.init_shuttle);
         this.layer.add(this.images.shuttle);
         this.layer.add(this.images.travel_arrows);
@@ -76,6 +71,7 @@ class Display {
         this.stage.add(this.hexTiebreaker.layer);
         this.stage.add(this.cardTiebreaker.layer);
         this.stage.add(this.techTiebreaker.layer);
+        this.stage.add(this.turnOrder.layer);
     }
 
     renderScreen() {
@@ -116,43 +112,19 @@ class Display {
             this.shapes.active_mission.hide();
         }
 
+        // card tiebreaker
         this.cardTiebreaker.render(state);
 
         // current action
         this.labels.action.text(state.action);
 
+        // tech tiebreaker
         this.techTiebreaker.render(state);
 
         // turn order
-        if (this.lacerda.currentPhase == 'SHUTTLE') {
-            this.shapes.turnorder_pointer.points([
-                315 + 72 * state.turnOrders[0], 1257,
-                315 + 72 * state.turnOrders[0], 1241,
-                315 + 72 * state.turnOrders[0] + (state.turnOrders[0] < 2 ? 74 : -74), 1186,
-            ]);
-            this.shapes.turnorder_pointer.show();
-            this.shapes.turnorder_circle.x(
-                315 + 72 * state.turnOrders[0] + (state.turnOrders[0] < 2 ? 77 : -77));
-            this.shapes.turnorder_circle.show();
+        this.turnOrder.render(state, this.lacerda.currentPhase);
 
-        	for (var i = 0; i < 4; ++i) {
-        		if (i == state.turnOrders[0]) {
-        			this.shapes.turnorder_squares[i].fill('#1f8d7b');
-        		} else if (i == state.turnOrders[1]) {
-        			this.shapes.turnorder_squares[i].fill('#588c83');
-        		} else {
-        			this.shapes.turnorder_squares[i].fill('#969693');
-        		}
-        		this.shapes.turnorder_squares[i].show();
-        	}
-        } else {
-            this.shapes.turnorder_pointer.hide();
-            this.shapes.turnorder_circle.hide();
-        	for (var i = 0; i < 4; ++i) {
-        		this.shapes.turnorder_squares[i].hide();
-        	}
-        }
-
+        // hex tiebreaker
         this.hexTiebreaker.render(state);
 
         // buttons
@@ -213,13 +185,12 @@ class Display {
         this.cardTiebreaker.imagesLoaded(images);
         this.techTiebreaker.imagesLoaded(images);
 
-        // call this from here because we need the images for the buttons
+        // call these from here because we need the images for the buttons
         this.setupButtons(images);
-
         this.startScreen.setupButtons(images, this);
+
         this.stage.add(this.startScreen.layer);
         this.startScreen.render();
-        //MMM this.renderStartScreen();
     }
     
     loadImages() {
@@ -272,7 +243,6 @@ class Display {
     }
 
     setupButtons(images) {
-
     	// Need this, otherwise when you touch the button, move your finger
     	// (as if you were trying to drag the button), and release it outside
     	// the button areak, it would remain "pressed".
@@ -334,29 +304,6 @@ class Display {
             y: 0.158 * this.height + 0.091 * this.width,
             radius: 0.091 * this.width,
             fill: '#cf4541',
-        });
-
-        this.shapes['turnorder_squares'] = [
-        	new Konva.Rect({ x: 288, y: 1257, width: 54, height: 54 }),
-        	new Konva.Rect({ x: 360, y: 1257, width: 54, height: 54 }),
-        	new Konva.Rect({ x: 432, y: 1257, width: 54, height: 54 }),
-        	new Konva.Rect({ x: 504, y: 1257, width: 54, height: 54 }),
-        ];
-
-        this.shapes['turnorder_circle'] = new Konva.Circle({
-            y: 1183,
-            radius: 5,
-            stroke: '#1f8d7b',
-            strokeWidth: 1,
-        });
-        this.shapes['turnorder_pointer'] = new Konva.Line({
-                points: [
-                    315+144, 1257,
-                    315+144, 1241,
-                    241+144, 1186,
-                ],
-    		stroke: '#1f8d7b',
-    		strokeWidth: 1,
         });
     }
 }
