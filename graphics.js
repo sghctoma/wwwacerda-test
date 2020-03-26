@@ -43,20 +43,13 @@ class Display {
             next_round_hover: 'assets/buttons/next-round_hover.svg',
             colonization_phase_indicator: 'assets/2@3x.png',
 
-            // card randomizer
-            rnd_card_1: 'assets/card/random-card-display-hd-spot-1@3x.png',
-            rnd_card_2: 'assets/card/random-card-display-hd-spot-2@3x.png',
-            rnd_card_3: 'assets/card/random-card-display-hd-spot-3@3x.png',
-            rnd_card_4: 'assets/card/random-card-display-hd-spot-4@3x.png',
-            rnd_card_5: 'assets/card/random-card-display-hd-spot-5@3x.png',
-            rnd_card_6: 'assets/card/random-card-display-hd-spot-6@3x.png',
-
             // tech randomizer
             rnd_tech_up: 'assets/tech/tech-tile-hd-down@3x.png',
             rnd_tech_down: 'assets/tech/tech-tile-hd-up@3x.png',
         };
 
         this.hexTiebreaker = new HexTiebreaker();
+        this.cardTiebreaker = new CardTiebreaker(this.sources);
 
         this.labels = {};
         this.shapes = {};
@@ -129,7 +122,6 @@ class Display {
         this.layer.add(this.labels.mission);
         this.layer.add(this.labels.action);
 
-        this.layer.add(this.images.card_random);
         this.layer.add(this.images.tech_random);
 
         this.layer.add(this.shapes.turnorder_pointer);
@@ -146,6 +138,7 @@ class Display {
         this.layer.add(this.images.shuttle_nogo);
 
         this.stage.add(this.hexTiebreaker.layer);
+        this.stage.add(this.cardTiebreaker.layer);
     }
 
     renderScreen() {
@@ -186,9 +179,7 @@ class Display {
             this.shapes.active_mission.hide();
         }
 
-        // card tiebreaker
-        this.images.card_random.image(
-        	this.images.card_random_src[state.cardTiebreaker]);
+        this.cardTiebreaker.render(state);
 
         // current action
         this.labels.action.text(state.action);
@@ -286,11 +277,7 @@ class Display {
             y: 1250,
         });
 
-        this.images['card_random'] = new Konva.Image({ x: 24, y: 842 });
-        this.images['card_random_src'] = [];
-        for (var i = 0; i < 6; i++) {
-        	this.images['card_random_src'][i] = images['rnd_card_'+(i+1)];
-        }
+        this.cardTiebreaker.imagesLoaded(images);
         
         this.images['tech_random'] = new Konva.Image({ x: 732, y: 1086 });
         this.images['tech_random_src'] = [

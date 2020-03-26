@@ -1,3 +1,30 @@
+class CardTiebreaker {
+    constructor(sources) {
+        sources['rnd_card_1'] = 'assets/card/random-card-display-hd-spot-1@3x.png';
+        sources['rnd_card_2'] = 'assets/card/random-card-display-hd-spot-2@3x.png';
+        sources['rnd_card_3'] = 'assets/card/random-card-display-hd-spot-3@3x.png';
+        sources['rnd_card_4'] = 'assets/card/random-card-display-hd-spot-4@3x.png';
+        sources['rnd_card_5'] = 'assets/card/random-card-display-hd-spot-5@3x.png';
+        sources['rnd_card_6'] = 'assets/card/random-card-display-hd-spot-6@3x.png';
+
+        this.images = [];
+        this.placeholder = new Konva.Image({ x: 24, y: 842 });
+        this.layer = new Konva.Layer();
+        this.layer.add(this.placeholder);
+    }
+
+    imagesLoaded(images) {
+        for (var i = 0; i < 6; i++) {
+        	this.images[i] = images['rnd_card_' + (i+1)];
+        }
+    }
+    
+    render(state) {
+        this.placeholder.image(this.images[state.cardTiebreaker]);
+        this.layer.draw();
+    }
+};
+
 class HexTiebreaker {
     constructor() {
         this.hex_coordinates = [
