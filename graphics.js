@@ -69,7 +69,22 @@ class Display {
             [{q: -2, r: +5}, {q: -3, r: +5}, {q: -4, r: +5}, {q: -5, r: +5}],   // bottom left up
             [{q: -5, r: +5}, {q: -4, r: +5}, {q: -3, r: +5}, {q: -2, r: +5}],   // bottom left down
         ];
-    
+        this.triangle_coordinates = [
+            [{q: -6.00, r: +1.70}, {q: -5.00, r: -0.75}],   // left down
+            [{q: -6.00, r: +4.30}, {q: -5.00, r: +5.75}],   // left up
+            [{q: +6.00, r: -1.70}, {q: +5.00, r: +0.75}],   // right up
+            [{q: +6.00, r: -4.30}, {q: +5.00, r: -5.75}],   // right down
+            [{q: +1.75, r: -5.00}, {q: -0.75, r: -4.00}],   // top right down
+            [{q: +5.25, r: -5.00}, {q: +6.75, r: -4.00}],   // top right up
+            [{q: +1.75, r: +3.25}, null],                   // bottom right up
+            [{q: +5.25, r: -0.25}, {q: +6.75, r: -2.75}],   // bottom right down
+            [{q: -5.25, r: +0.25}, {q: -6.75, r: +2.75}],   // top left up
+            [{q: -1.75, r: -3.25}, {q: +0.75, r: -4.75}],   // top left down
+            [{q: -1.75, r: +5.00}, null],                   // bottom left up
+            [{q: -5.25, r: +5.00}, {q: -6.75, r: +4.00}],   // bottom left down
+        ];
+        this.triangle_rotations = [180, 0, 0, 180, 120, 300, 60, 240, 60, 240, 300, 120];
+
         this.labels = {};
         this.shapes = {};
         this.images = {};
@@ -177,6 +192,8 @@ class Display {
         this.shapes.hexes.forEach((hex) => {
             this.layer.add(hex);
         });
+        this.layer.add(this.shapes.triangle1);
+        this.layer.add(this.shapes.triangle2);
     }
 
     renderScreen() {
@@ -272,6 +289,21 @@ class Display {
             }
             hex += 1;
         });
+        var t1 = this.triangle_coordinates[state.hexTiebreaker][0];
+        var c1 = this.getHexCoordinates(t1.q, t1.r);
+        this.shapes['triangle1'].x(c1.x);
+        this.shapes['triangle1'].y(c1.y);
+        this.shapes['triangle1'].rotation(this.triangle_rotations[state.hexTiebreaker]);
+        var t2 = this.triangle_coordinates[state.hexTiebreaker][1];
+        if (t2 == null) {
+            this.shapes['triangle2'].hide();
+        } else {
+            this.shapes['triangle2'].show();
+            var c2 = this.getHexCoordinates(t2.q, t2.r);
+            this.shapes['triangle2'].x(c2.x);
+            this.shapes['triangle2'].y(c2.y);
+            this.shapes['triangle2'].rotation(this.triangle_rotations[state.hexTiebreaker]);
+        }
 
         // buttons
         if (this.lacerda.currentPhase == 'SHUTTLE') {
@@ -437,13 +469,6 @@ class Display {
         this.buttons['init_shuttle'].y(1340);
         this.buttons['next_round'].y(1355);
 
-        //XXX: back button is still png with proper size, so we undo the 1.5x
-        //     increase here.
-        this.buttons['backbutton'].x(0);
-        this.buttons['backbutton'].y(0);
-        this.buttons['backbutton'].width(images['backbutton'].width);
-        this.buttons['backbutton'].height(images['backbutton'].height);
-
         this.buttons['reveal_start'].on('mouseup touchend', () => {
         	this.revealStartPosition();
         });
@@ -460,6 +485,17 @@ class Display {
         });
         this.buttons['init_shuttle'].on('mouseup touchend', () => {
         	this.lacerda.currentPhase = 'SHUTTLE';
+            this.renderScreen();
+        });
+
+        //XXX: back button is still png with proper size, so we undo the 1.5x
+        //     increase here.
+        this.buttons['backbutton'].x(0);
+        this.buttons['backbutton'].y(0);
+        this.buttons['backbutton'].width(images['backbutton'].width);
+        this.buttons['backbutton'].height(images['backbutton'].height);
+        this.buttons['backbutton'].on('click tap', () => {
+            this.lacerda.prevState();
             this.renderScreen();
         });
     }
@@ -501,6 +537,23 @@ class Display {
             new Konva.RegularPolygon({ sides: 6, radius: 37, rotation: 30, fill: '#839e97' }),
             new Konva.RegularPolygon({ sides: 6, radius: 37, rotation: 30, fill: '#909b96' }),
         ];
-        //*/
+        
+        this.shapes['triangle1'] = new Konva.RegularPolygon({
+            x: 100,
+            y: 100,
+            sides: 3,
+            radius: 22 / Math.sqrt(3),
+            scaleY: 2/3,
+            fill: '#1f8d7b',
+        });
+
+        this.shapes['triangle2'] = new Konva.RegularPolygon({
+            x: 100,
+            y: 100,
+            sides: 3,
+            radius: 22 / Math.sqrt(3),
+            scaleY: 2/3,
+            fill: '#839e97',
+        });
     }
 }
