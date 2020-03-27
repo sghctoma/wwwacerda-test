@@ -1,12 +1,12 @@
 class StartScreen {
     constructor(sources) {
         sources['startscreen'] = 'assets/startscreen.png';
-        sources['reveal_start'] = 'assets/buttons/reveal-start-position.svg';
-        sources['reveal_start_pressed'] = 'assets/buttons/reveal-start-position_pressed.svg';
-        sources['reveal_start_hover'] = 'assets/buttons/reveal-start-position_hover.svg';
-        sources['first_round'] = 'assets/buttons/round-one.svg';
-        sources['first_round_pressed'] = 'assets/buttons/round-one_pressed.svg';
-        sources['first_round_hover'] = 'assets/buttons/round-one_hover.svg';
+        sources['reveal_start'] = 'assets/buttons/reveal-start-position.png';
+        sources['reveal_start_pressed'] = 'assets/buttons/reveal-start-position_pressed.png';
+        sources['reveal_start_hover'] = 'assets/buttons/reveal-start-position_hover.png';
+        sources['first_round'] = 'assets/buttons/round-one.png';
+        sources['first_round_pressed'] = 'assets/buttons/round-one_pressed.png';
+        sources['first_round_hover'] = 'assets/buttons/round-one_hover.png';
 
         this.layer = new Konva.Layer();
         this.buttons = [];
@@ -29,9 +29,7 @@ class StartScreen {
         ['reveal_start', 'first_round'].forEach((b) => {
             this.buttons[b] = new Konva.Image({
                 image: images[b],
-                x: (display.width - images[b].width * 1.5) / 2,
-                width: images[b].width * 1.5,
-                height: images[b].height * 1.5,
+                x: (display.width - images[b].width) / 2,
             });
             this.buttons[b].on('mouseover', () => {
                 this.buttons[b].image(images[b + '_hover']);

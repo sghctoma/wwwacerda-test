@@ -23,15 +23,15 @@ class Display {
             shuttle: 'assets/shuttle-icon-centered@3x.png',
             travel_arrows: 'assets/travel-arrows-left-right@3x.png',
             shuttle_phase_indicator: 'assets/shuttle-phase-graphical-indicator@3x.png',
-            init_shuttle: 'assets/buttons/initiate-shuttle-phase.svg',
-            init_shuttle_pressed: 'assets/buttons/initiate-shuttle-phase_pressed.svg',
-            init_shuttle_hover: 'assets/buttons/initiate-shuttle-phase_hover.svg',
+            init_shuttle: 'assets/buttons/initiate-shuttle-phase.png',
+            init_shuttle_pressed: 'assets/buttons/initiate-shuttle-phase_pressed.png',
+            init_shuttle_hover: 'assets/buttons/initiate-shuttle-phase_hover.png',
             
             // colonization phase; no travel
             shuttle_nogo: 'assets/no-travel-icon@3x.png',
-            next_round: 'assets/buttons/next-round.svg',
-            next_round_pressed: 'assets/buttons/next-round_pressed.svg',
-            next_round_hover: 'assets/buttons/next-round_hover.svg',
+            next_round: 'assets/buttons/next-round.png',
+            next_round_pressed: 'assets/buttons/next-round_pressed.png',
+            next_round_hover: 'assets/buttons/next-round_hover.png',
             colonization_phase_indicator: 'assets/2@3x.png',
         };
 
@@ -257,9 +257,7 @@ class Display {
         ['init_shuttle', 'next_round', 'backbutton'].forEach((b) => {
             this.buttons[b] = new Konva.Image({
                 image: images[b],
-                x: (this.width - images[b].width * 1.5) / 2,
-                width: images[b].width * 1.5,
-                height: images[b].height * 1.5,
+                x: (this.width - images[b].width) / 2,
             });
             this.buttons[b].on('mouseover', () => {
                 this.buttons[b].image(images[b + '_hover']);
@@ -287,12 +285,9 @@ class Display {
             this.renderScreen();
         });
 
-        //XXX: back button is still png with proper size, so we undo the 1.5x
-        //     increase here.
+        // The back button is the only non-centered button.
         this.buttons['backbutton'].x(0);
         this.buttons['backbutton'].y(0);
-        this.buttons['backbutton'].width(images['backbutton'].width);
-        this.buttons['backbutton'].height(images['backbutton'].height);
         this.buttons['backbutton'].on('click tap', () => {
             this.lacerda.prevState();
             this.renderScreen();
