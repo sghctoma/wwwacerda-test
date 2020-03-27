@@ -132,7 +132,6 @@ class Display {
             this.buttons.init_shuttle.hide();
             this.images.shuttle.hide();
             this.images.travel_arrows.show();
-
             this.buttons.next_round.show();
         } else if (state.turnOrders != null) {
             this.buttons.init_shuttle.show();
@@ -149,6 +148,12 @@ class Display {
         }
 
         this.layer.draw();
+
+        // We want to render the 'hover' buttons if they are under the mouse
+        // pointer.
+        const mousePos = this.stage.getPointerPosition();
+        const e = this.stage.getIntersection(mousePos);
+        e.fire('mouseover');
     }
 
     imagesLoaded(images) {
@@ -240,7 +245,6 @@ class Display {
             text: '',
             fill: 'white'
         });
-        console.log(this.labels['mission'].height());
     }
 
     setupButtons(images) {
@@ -267,7 +271,11 @@ class Display {
                 this.buttons[b].image(images[b + '_pressed']);
                 this.layer.draw();
             });
-            this.buttons[b].on('mouseout touchend mouseup', () => {
+            this.buttons[b].on('mouseup', () => {
+                this.buttons[b].image(images[b + '_hover']);
+                this.layer.draw();
+            });
+            this.buttons[b].on('mouseout touchend', () => {
                 this.buttons[b].image(images[b]);
                 this.layer.draw();
             });
@@ -288,7 +296,7 @@ class Display {
         // The back button is the only non-centered button.
         this.buttons['backbutton'].x(0);
         this.buttons['backbutton'].y(0);
-        this.buttons['backbutton'].on('click tap', () => {
+        this.buttons['backbutton'].on('mouseup touchend', () => {
             this.lacerda.prevState();
             this.renderScreen();
         });

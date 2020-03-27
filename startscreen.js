@@ -39,6 +39,10 @@ class StartScreen {
                 this.buttons[b].image(images[b + '_pressed']);
                 this.layer.draw();
             });
+            this.buttons[b].on('mouseup', () => {
+                this.buttons[b].image(images[b + '_hover']);
+                this.layer.draw();
+            });
             this.buttons[b].on('mouseout touchend mouseup', () => {
                 this.buttons[b].image(images[b]);
                 this.layer.draw();
@@ -49,7 +53,7 @@ class StartScreen {
         this.buttons['first_round'].y(1355);
         
         this.buttons['reveal_start'].on('mouseup touchend', () => {
-        	this.revealStartPosition(display.lacerda.startPositions);
+            this.revealStartPosition(display.lacerda.startPositions, display.stage);
         });
         this.buttons['first_round'].on('mouseup touchend', () => {
         	this.layer.destroy();
@@ -60,7 +64,7 @@ class StartScreen {
         });
     }
 
-    revealStartPosition(startPositions) {
+    revealStartPosition(startPositions, stage) {
     	var posLacerda = startPositions[0];
     	var offset = (posLacerda < 4 ? 82 : 493);
     	var color;
@@ -104,11 +108,18 @@ class StartScreen {
         this.layer.add(this.buttons.first_round);
         
         this.layer.draw();
+        // We want to render the 'hover' buttons if they are under the mouse
+        // pointer.
+        const mousePos = stage.getPointerPosition();
+        const e = stage.getIntersection(mousePos);
+        e.fire('mouseover');
     }
 
     render() {
         this.layer.add(this.background);
         this.layer.add(this.buttons['reveal_start']);
         this.layer.draw();
+        //XXX should fire mouseover, but pointer coordinates are somehow
+        //not yet registered on the stage at this point.
     }
 };
