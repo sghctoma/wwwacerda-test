@@ -15,9 +15,9 @@ class Display {
         this.sources = {
             // general
             background: 'assets/background.png',
-            backbutton: 'assets/buttons/backbutton.png',
-            backbutton_pressed: 'assets/buttons/backbutton_pressed.png',
-            backbutton_hover: 'assets/buttons/backbutton_hover.png',
+            backbutton: 'assets/buttons/back-button@3x.png',
+            backbutton_pressed: 'assets/buttons/back-button-pressed@3x.png',
+            backbutton_hover: 'assets/buttons/back-button-hover@3x.png',
 
             // colonization phase; travel
             shuttle: 'assets/shuttle-icon-centered@3x.png',
@@ -212,7 +212,7 @@ class Display {
     setupLabels() {
         this.labels['status'] = new Konva.Text({
             x: 0,
-            y: 127,
+            y: 136,
             width: this.width,
             align: 'center',
             fontFamily: 'Continuum Medium Regular',
@@ -232,7 +232,7 @@ class Display {
         });
         this.labels['mission'] = new Konva.Text({
             x: 0,
-            y: 265,
+            y: 267,
             width: this.width,
             align: 'center',
             fontFamily: 'Continuum Medium Regular',
@@ -240,6 +240,7 @@ class Display {
             text: '',
             fill: 'white'
         });
+        console.log(this.labels['mission'].height());
     }
 
     setupButtons(images) {
@@ -300,9 +301,9 @@ class Display {
 
     setupShapes() {
         this.shapes['active_mission'] = new Konva.Circle({
-            x: 0.5 * this.width, //0.409 + 0.091 
-            y: 0.158 * this.height + 0.091 * this.width,
-            radius: 0.091 * this.width,
+            x: this.width / 2,
+            y: 318,
+            radius: 78,
             fill: '#cf4541',
         });
     }
