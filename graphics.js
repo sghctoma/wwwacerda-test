@@ -36,6 +36,7 @@ class Display {
         };
 
         this.startScreen = new StartScreen(this.sources);
+        this.missionCircle = new MissionCircle(this.sources);
         this.hexTiebreaker = new HexTiebreaker();
         this.cardTiebreaker = new CardTiebreaker(this.sources);
         this.techTiebreaker = new TechTiebreaker(this.sources);
@@ -47,7 +48,6 @@ class Display {
         this.buttons = {};
 
         this.setupLabels();
-        this.setupShapes();
         this.loadImages();
     }
 
@@ -57,8 +57,6 @@ class Display {
         this.layer.add(this.labels.status);
         this.layer.add(this.images.colonization_phase_indicator);
         this.layer.add(this.images.shuttle_phase_indicator);
-        this.layer.add(this.shapes.active_mission);
-        this.layer.add(this.labels.mission);
         this.layer.add(this.labels.action);
 
         this.layer.add(this.buttons.init_shuttle);
@@ -68,6 +66,7 @@ class Display {
         this.layer.add(this.buttons.next_round);
         this.layer.add(this.images.shuttle_nogo);
 
+        this.stage.add(this.missionCircle.layer);
         this.stage.add(this.hexTiebreaker.layer);
         this.stage.add(this.cardTiebreaker.layer);
         this.stage.add(this.techTiebreaker.layer);
@@ -94,23 +93,8 @@ class Display {
             this.images.shuttle_phase_indicator.show();
         }
 
-        // mission marker
-        if (state.mission != null) {
-            this.labels.mission.text(['A', 'B', 'C'][state.mission-1]);
-            //XXX: Please don't read the next 7 lines. It's an ugly hack to make
-            //     sure mission marker letters are actually centered.
-            if (state.mission == 1) {
-                this.labels.mission.x(1);
-            } else if (state.mission == 2) {
-                this.labels.mission.x(2);
-            } else {
-                this.labels.mission.x(0);
-            }
-            this.shapes.active_mission.show();
-        } else {
-            this.labels.mission.text('');
-            this.shapes.active_mission.hide();
-        }
+        //mission marker
+        this.missionCircle.render(state);
 
         // card tiebreaker
         this.cardTiebreaker.render(state);
@@ -187,6 +171,7 @@ class Display {
         });
 
         this.startScreen.imagesLoaded(images);
+        this.missionCircle.imagesLoaded(images);
         this.cardTiebreaker.imagesLoaded(images);
         this.techTiebreaker.imagesLoaded(images);
 
@@ -233,16 +218,6 @@ class Display {
             fontFamily: 'Continuum Medium Regular',
             fontSize: 147,
             text: '1',
-            fill: 'white'
-        });
-        this.labels['mission'] = new Konva.Text({
-            x: 0,
-            y: 267,
-            width: this.width,
-            align: 'center',
-            fontFamily: 'Continuum Medium Regular',
-            fontSize: 108,
-            text: '',
             fill: 'white'
         });
     }
@@ -304,14 +279,5 @@ class Display {
         this.buttons['backbutton'].shadowBlur(6);
         this.buttons['backbutton'].shadowOffset({ x: 1.5, y: 2.0 });
         this.buttons['backbutton'].shadowOpacity(0.2);
-    }
-
-    setupShapes() {
-        this.shapes['active_mission'] = new Konva.Circle({
-            x: this.width / 2,
-            y: 318,
-            radius: 78,
-            fill: '#cf4541',
-        });
     }
 }
