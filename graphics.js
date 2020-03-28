@@ -300,6 +300,10 @@ class Display {
             this.lacerda.prevState();
             this.renderScreen();
         });
+        this.buttons['backbutton'].shadowColor('#16d3ab');
+        this.buttons['backbutton'].shadowBlur(6);
+        this.buttons['backbutton'].shadowOffset({ x: 1.5, y: 2.0 });
+        this.buttons['backbutton'].shadowOpacity(0.2);
     }
 
     setupShapes() {
